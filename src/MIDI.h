@@ -36,6 +36,8 @@
 
 BEGIN_MIDI_NAMESPACE
 
+typedef Message<DefaultSettings::SysExMaxSize> MidiMessage;
+
 /*! \brief The main class for MIDI handling.
 It is templated over the type of serial port to provide abstraction from
 the hardware interface, meaning you can use HardwareSerial, SoftwareSerial
@@ -148,6 +150,7 @@ public:
     inline void setHandleStop(void (*fptr)(void));
     inline void setHandleActiveSensing(void (*fptr)(void));
     inline void setHandleSystemReset(void (*fptr)(void));
+    inline void setHandleAllMessages(void (*fptr)(MidiMessage));
 
     inline void disconnectCallbackFromType(MidiType inType);
 
@@ -172,6 +175,7 @@ private:
     void (*mStopCallback)(void);
     void (*mActiveSensingCallback)(void);
     void (*mSystemResetCallback)(void);
+    void (*mAllMessagesCallback)(MidiMessage);
 
     // -------------------------------------------------------------------------
     // MIDI Soft Thru
@@ -196,9 +200,6 @@ private:
 private:
     bool            mThruActivated  : 1;
     MidiFilterMode  mThruFilterMode : 7;
-
-private:
-    typedef Message<Settings::SysExMaxSize> MidiMessage;
 
 private:
     StatusByte  mRunningStatus_RX;

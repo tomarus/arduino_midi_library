@@ -53,6 +53,7 @@ inline MidiInterface<SerialPort, Settings>::MidiInterface(SerialPort& inSerial)
     mStopCallback                   = 0;
     mActiveSensingCallback          = 0;
     mSystemResetCallback            = 0;
+    mAllMessagesCallback            = 0;
 }
 
 /*! \brief Destructor for MidiInterface.
@@ -979,6 +980,7 @@ template<class SerialPort, class Settings> void MidiInterface<SerialPort, Settin
 template<class SerialPort, class Settings> void MidiInterface<SerialPort, Settings>::setHandleStop(void (*fptr)(void))                                               { mStopCallback                 = fptr; }
 template<class SerialPort, class Settings> void MidiInterface<SerialPort, Settings>::setHandleActiveSensing(void (*fptr)(void))                                      { mActiveSensingCallback        = fptr; }
 template<class SerialPort, class Settings> void MidiInterface<SerialPort, Settings>::setHandleSystemReset(void (*fptr)(void))                                        { mSystemResetCallback          = fptr; }
+template<class SerialPort, class Settings> void MidiInterface<SerialPort, Settings>::setHandleAllMessages(void (*fptr)(MidiMessage msg))                             { mAllMessagesCallback          = fptr; }
 
 /*! \brief Detach an external function from the given type.
 
@@ -1020,6 +1022,8 @@ void MidiInterface<SerialPort, Settings>::disconnectCallbackFromType(MidiType in
 template<class SerialPort, class Settings>
 void MidiInterface<SerialPort, Settings>::launchCallback()
 {
+    if (mAllMessagesCallback != 0) mAllMessagesCallback(mMessage);
+
     // The order is mixed to allow frequent messages to trigger their callback faster.
     switch (mMessage.type)
     {
